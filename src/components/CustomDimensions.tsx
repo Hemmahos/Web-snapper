@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { ArrowsMaximize, ArrowsMinimize } from 'lucide-react';
+import { Maximize, Minimize } from 'lucide-react';
 
 interface CustomDimensionsProps {
   width: number;
@@ -29,7 +29,7 @@ const CustomDimensions: React.FC<CustomDimensionsProps> = ({
           </label>
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2">
-              <ArrowsMaximize className="h-4 w-4 text-muted-foreground" />
+              <Maximize className="h-4 w-4 text-muted-foreground" />
             </div>
             <input
               id="width-input"
@@ -49,7 +49,7 @@ const CustomDimensions: React.FC<CustomDimensionsProps> = ({
           </label>
           <div className="relative">
             <div className="absolute left-3 top-1/2 -translate-y-1/2">
-              <ArrowsMinimize className="h-4 w-4 text-muted-foreground" />
+              <Minimize className="h-4 w-4 text-muted-foreground" />
             </div>
             <input
               id="height-input"
