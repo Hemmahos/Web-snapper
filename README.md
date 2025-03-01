@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/20fc6acf-ead7-4fcf-aba2-b571a97a0c7c
+**URL**: https://figma-web-snapper.lovable.app/
 
 ## How can I edit this code?
 
