@@ -20,3 +20,14 @@ export interface ScreenshotResult {
   url: string;
   timestamp: number;
 }
+
+// Add Ethereum window type
+declare global {
+  interface Window {
+    ethereum?: {
+      isMetaMask?: boolean;
+      request: (request: { method: string; params?: any[] }) => Promise<any>;
+      on: (event: string, callback: (...args: any[]) => void) => void;
+    };
+  }
+}
