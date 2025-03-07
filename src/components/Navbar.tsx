@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Monitor } from 'lucide-react';
+import WalletConnect from './WalletConnect';
 
 const Navbar: React.FC = () => {
   return (
@@ -10,11 +11,14 @@ const Navbar: React.FC = () => {
         <span className="font-semibold text-lg">WebSnapper</span>
       </div>
       
-      <nav className="hidden md:flex items-center space-x-6">
-        <a href="#" className="text-sm font-medium hover:text-primary transition-all-200">Home</a>
-        <a href="#" className="text-sm font-medium hover:text-primary transition-all-200">Features</a>
-        <a href="#" className="text-sm font-medium hover:text-primary transition-all-200">About</a>
-      </nav>
+      <div className="flex items-center space-x-4">
+        <nav className="hidden md:flex items-center space-x-6">
+          <a href="#" className="text-sm font-medium hover:text-primary transition-all-200">Home</a>
+          <a href="#" className="text-sm font-medium hover:text-primary transition-all-200">Features</a>
+          <a href="#" className="text-sm font-medium hover:text-primary transition-all-200">About</a>
+        </nav>
+        <WalletConnect />
+      </div>
     </header>
   );
 };
