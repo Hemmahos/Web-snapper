@@ -51,10 +51,13 @@ const Index = () => {
   };
 
   const getImagePlaceholder = (width: number, height: number, websiteUrl: string): string => {
-    // Use a reliable placeholder format with the correct path to public directory
-    const encodedUrl = encodeURIComponent(websiteUrl);
+    // Generate a more reliable placeholder image
+    // Use a standard SVG placeholder that should work well for downloading
+    const cleanUrl = websiteUrl.replace(/^https?:\/\//, '');
     const timestamp = new Date().getTime(); // Add timestamp to avoid caching
-    return `/placeholder.svg?width=${width}&height=${height}&text=${encodedUrl}&t=${timestamp}`;
+    
+    // Use a different approach - embed a sample image
+    return `/placeholder.svg?width=${width}&height=${height}&text=${encodeURIComponent(cleanUrl)}&t=${timestamp}`;
   };
 
   const handleSubmit = async () => {
@@ -77,8 +80,8 @@ const Index = () => {
       
       console.log("Creating screenshot for:", formattedUrl, width, height);
       
-      // Create a result with a placeholder image
-      const placeholderUrl = getImagePlaceholder(width, height, formattedUrl);
+      // Use one of the placeholder images which will be more reliable for testing download
+      const placeholderUrl = `/placeholder.svg`;
       console.log("Using placeholder URL:", placeholderUrl);
       
       const mockResult: ScreenshotResult = {

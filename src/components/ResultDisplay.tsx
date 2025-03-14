@@ -53,26 +53,41 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
 
   const handleDownload = () => {
     try {
-      // Create an anchor element but don't attach it to the DOM
-      const link = document.createElement('a');
+      console.log("Starting download with URL:", result.imageUrl);
       
-      // For local files in the public directory, use a direct path
-      link.href = result.imageUrl;
-      
-      // Set a default filename
-      const filename = `screenshot-${new Date().getTime()}.png`;
-      link.setAttribute('download', filename);
-      
-      // Programmatically click the link to trigger download
-      document.body.appendChild(link);
-      link.click();
-      
-      // Clean up after download is initiated
-      setTimeout(() => {
-        document.body.removeChild(link);
-      }, 100);
-      
-      toast.success('Screenshot download started');
+      // Create a fetch request to get the image data
+      fetch(result.imageUrl)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.blob();
+        })
+        .then(blob => {
+          // Create a URL for the blob
+          const url = URL.createObjectURL(blob);
+          
+          // Create an anchor element
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `screenshot-${new Date().getTime()}.png`;
+          
+          // Append to the document, click, and clean up
+          document.body.appendChild(link);
+          link.click();
+          
+          // Clean up
+          setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url); // Free up memory
+          }, 100);
+          
+          toast.success('Screenshot downloaded');
+        })
+        .catch(error => {
+          console.error('Download error:', error);
+          toast.error('Failed to download screenshot');
+        });
     } catch (error) {
       console.error('Download error:', error);
       toast.error('Failed to download screenshot');
