@@ -51,8 +51,10 @@ const Index = () => {
   };
 
   const getImagePlaceholder = (width: number, height: number, websiteUrl: string): string => {
-    // Use a local placeholder that's guaranteed to work
-    return `/placeholder.svg?width=${width}&height=${height}&text=${encodeURIComponent(websiteUrl)}`;
+    // Use a reliable placeholder format with the correct path to public directory
+    const encodedUrl = encodeURIComponent(websiteUrl);
+    const timestamp = new Date().getTime(); // Add timestamp to avoid caching
+    return `/placeholder.svg?width=${width}&height=${height}&text=${encodedUrl}&t=${timestamp}`;
   };
 
   const handleSubmit = async () => {
@@ -67,17 +69,20 @@ const Index = () => {
     try {
       // In a real implementation, this would call an API to get the screenshot
       // Here we're simulating the API call with a timeout
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       
       const formattedUrl = prepareUrl(url);
       const width = getEffectiveWidth();
       const height = getEffectiveHeight();
       
-      // Simulate a result with placeholder data
-      // In reality, this would come from your actual screenshot service
+      console.log("Creating screenshot for:", formattedUrl, width, height);
+      
+      // Create a result with a placeholder image
+      const placeholderUrl = getImagePlaceholder(width, height, formattedUrl);
+      console.log("Using placeholder URL:", placeholderUrl);
+      
       const mockResult: ScreenshotResult = {
-        // Use a different placeholder service that's more reliable
-        imageUrl: getImagePlaceholder(width, height, formattedUrl),
+        imageUrl: placeholderUrl,
         width: width,
         height: height,
         url: formattedUrl,

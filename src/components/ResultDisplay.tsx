@@ -53,16 +53,21 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
 
   const handleDownload = () => {
     try {
-      // Create a temporary anchor element
+      // Create an anchor element but don't attach it to the DOM
       const link = document.createElement('a');
-      link.href = result.imageUrl;
-      link.download = `screenshot-${new Date().getTime()}.png`;
       
-      // For cross-browser compatibility
+      // For local files in the public directory, use a direct path
+      link.href = result.imageUrl;
+      
+      // Set a default filename
+      const filename = `screenshot-${new Date().getTime()}.png`;
+      link.setAttribute('download', filename);
+      
+      // Programmatically click the link to trigger download
       document.body.appendChild(link);
       link.click();
       
-      // Clean up
+      // Clean up after download is initiated
       setTimeout(() => {
         document.body.removeChild(link);
       }, 100);
@@ -74,10 +79,16 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
     }
   };
 
+  const handleImageLoad = () => {
+    console.log('Image loaded successfully:', result.imageUrl);
+    setIsImageLoading(false);
+    setImageError(false);
+  };
+
   const handleImageError = () => {
+    console.error('Image failed to load from URL:', result.imageUrl);
     setImageError(true);
     setIsImageLoading(false);
-    console.error('Image failed to load from URL:', result.imageUrl);
   };
 
   return (
@@ -118,7 +129,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
           {isImageLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-card z-10">
               <div className="animate-pulse flex flex-col items-center">
-                <div className="h-8 w-8 rounded-full bg-secondary/50 mb-2"></div>
+                <Loader2 className="h-8 w-8 text-primary animate-spin mb-2" />
                 <div className="h-3 w-24 bg-secondary/50 rounded"></div>
               </div>
             </div>
@@ -139,7 +150,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
                 "w-full h-auto object-contain",
                 isImageLoading ? "opacity-0" : "opacity-100 transition-opacity duration-300"
               )}
-              onLoad={() => setIsImageLoading(false)}
+              onLoad={handleImageLoad}
               onError={handleImageError}
               style={{minHeight: "100px"}}
             />
