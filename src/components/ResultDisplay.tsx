@@ -13,6 +13,7 @@ interface ResultDisplayProps {
 const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false }) => {
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   if (isLoading) {
     return (
@@ -51,14 +52,32 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
   };
 
   const handleDownload = () => {
-    // Create a temporary anchor element
-    const link = document.createElement('a');
-    link.href = result.imageUrl;
-    link.download = `screenshot-${new Date().getTime()}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success('Screenshot downloaded');
+    try {
+      // Create a temporary anchor element
+      const link = document.createElement('a');
+      link.href = result.imageUrl;
+      link.download = `screenshot-${new Date().getTime()}.png`;
+      
+      // For cross-browser compatibility
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      setTimeout(() => {
+        document.body.removeChild(link);
+      }, 100);
+      
+      toast.success('Screenshot download started');
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Failed to download screenshot');
+    }
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
+    setIsImageLoading(false);
+    console.error('Image failed to load from URL:', result.imageUrl);
   };
 
   return (
@@ -95,7 +114,7 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
           </div>
         </div>
         
-        <div className="relative border-x border-b border-border rounded-b-lg overflow-hidden">
+        <div className="relative border-x border-b border-border rounded-b-lg overflow-hidden" style={{minHeight: "200px"}}>
           {isImageLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-card z-10">
               <div className="animate-pulse flex flex-col items-center">
@@ -105,15 +124,26 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
             </div>
           )}
           
-          <img
-            src={result.imageUrl}
-            alt={`Screenshot of ${result.url}`}
-            className={cn(
-              "w-full h-auto object-contain",
-              isImageLoading ? "opacity-0" : "opacity-100 transition-opacity duration-300"
-            )}
-            onLoad={() => setIsImageLoading(false)}
-          />
+          {imageError ? (
+            <div className="flex flex-col items-center justify-center p-8 text-center h-64">
+              <svg className="h-12 w-12 text-muted-foreground mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <p className="text-muted-foreground">Failed to load the screenshot image.</p>
+            </div>
+          ) : (
+            <img
+              src={result.imageUrl}
+              alt={`Screenshot of ${result.url}`}
+              className={cn(
+                "w-full h-auto object-contain",
+                isImageLoading ? "opacity-0" : "opacity-100 transition-opacity duration-300"
+              )}
+              onLoad={() => setIsImageLoading(false)}
+              onError={handleImageError}
+              style={{minHeight: "100px"}}
+            />
+          )}
           
           <div className="absolute bottom-2 right-2">
             <div className="px-2 py-1 bg-black/70 backdrop-blur-sm text-white text-xs rounded-md">

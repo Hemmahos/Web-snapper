@@ -50,6 +50,11 @@ const Index = () => {
     return inputUrl;
   };
 
+  const getImagePlaceholder = (width: number, height: number, websiteUrl: string): string => {
+    // Use a local placeholder that's guaranteed to work
+    return `/placeholder.svg?width=${width}&height=${height}&text=${encodeURIComponent(websiteUrl)}`;
+  };
+
   const handleSubmit = async () => {
     if (!isFormValid()) {
       toast.error('Please enter a valid URL and dimensions');
@@ -57,6 +62,7 @@ const Index = () => {
     }
     
     setIsLoading(true);
+    setResult(null);
     
     try {
       // In a real implementation, this would call an API to get the screenshot
@@ -64,13 +70,16 @@ const Index = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
       
       const formattedUrl = prepareUrl(url);
+      const width = getEffectiveWidth();
+      const height = getEffectiveHeight();
       
       // Simulate a result with placeholder data
       // In reality, this would come from your actual screenshot service
       const mockResult: ScreenshotResult = {
-        imageUrl: `https://via.placeholder.com/${getEffectiveWidth()}x${getEffectiveHeight()}?text=${encodeURIComponent(formattedUrl)}`,
-        width: getEffectiveWidth(),
-        height: getEffectiveHeight(),
+        // Use a different placeholder service that's more reliable
+        imageUrl: getImagePlaceholder(width, height, formattedUrl),
+        width: width,
+        height: height,
         url: formattedUrl,
         timestamp: Date.now(),
       };
