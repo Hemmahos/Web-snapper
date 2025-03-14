@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { ScreenshotResult } from '../lib/types';
 import { Download, Copy, LinkIcon, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { toast } from 'sonner';
 
 interface ResultDisplayProps {
   result: ScreenshotResult | null;
@@ -39,12 +40,25 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
     try {
       await navigator.clipboard.writeText(text);
       setCopySuccess(`${label} copied!`);
+      toast.success(`${label} copied to clipboard`);
       setTimeout(() => setCopySuccess(null), 2000);
     } catch (err) {
       console.error('Failed to copy: ', err);
       setCopySuccess('Copy failed');
+      toast.error('Failed to copy to clipboard');
       setTimeout(() => setCopySuccess(null), 2000);
     }
+  };
+
+  const handleDownload = () => {
+    // Create a temporary anchor element
+    const link = document.createElement('a');
+    link.href = result.imageUrl;
+    link.download = `screenshot-${new Date().getTime()}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Screenshot downloaded');
   };
 
   return (
@@ -62,14 +76,13 @@ const ResultDisplay: React.FC<ResultDisplayProps> = ({ result, isLoading = false
             >
               <Copy className="h-4 w-4" />
             </button>
-            <a
-              href={result.imageUrl}
-              download={`screenshot-${new Date().getTime()}.png`}
+            <button
+              onClick={handleDownload}
               className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary transition-all-200"
               title="Download image"
             >
               <Download className="h-4 w-4" />
-            </a>
+            </button>
             <a
               href={result.url}
               target="_blank"

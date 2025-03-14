@@ -42,6 +42,14 @@ const Index = () => {
     return true;
   };
 
+  const prepareUrl = (inputUrl: string): string => {
+    // Ensure URL starts with http:// or https://
+    if (!inputUrl.startsWith('http://') && !inputUrl.startsWith('https://')) {
+      return `https://${inputUrl}`;
+    }
+    return inputUrl;
+  };
+
   const handleSubmit = async () => {
     if (!isFormValid()) {
       toast.error('Please enter a valid URL and dimensions');
@@ -55,13 +63,15 @@ const Index = () => {
       // Here we're simulating the API call with a timeout
       await new Promise((resolve) => setTimeout(resolve, 2000));
       
+      const formattedUrl = prepareUrl(url);
+      
       // Simulate a result with placeholder data
       // In reality, this would come from your actual screenshot service
       const mockResult: ScreenshotResult = {
-        imageUrl: `https://placehold.co/${getEffectiveWidth()}x${getEffectiveHeight()}?text=Screenshot+of+${encodeURIComponent(url)}`,
+        imageUrl: `https://via.placeholder.com/${getEffectiveWidth()}x${getEffectiveHeight()}?text=${encodeURIComponent(formattedUrl)}`,
         width: getEffectiveWidth(),
         height: getEffectiveHeight(),
-        url: url.startsWith('http') ? url : `https://${url}`,
+        url: formattedUrl,
         timestamp: Date.now(),
       };
       
